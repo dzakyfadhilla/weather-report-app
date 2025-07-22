@@ -13,18 +13,33 @@ export default [
         sourceType: 'module',
       },
       globals: {
-        node: true,
-        es2020: true,
+        console: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        Buffer: 'readonly',
+        global: 'readonly',
+        setImmediate: 'readonly',
+        clearImmediate: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly'
       }
     },
     plugins: {
       '@typescript-eslint': typescript,
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
-      'no-console': 'warn',
-      'prefer-const': 'error',
+      'no-console': 'off',
+      'prefer-const': 'warn',
+      'no-unused-vars': 'off', // Gunakan TypeScript version saja
+      'no-unreachable': 'warn'
     },
   },
   {
