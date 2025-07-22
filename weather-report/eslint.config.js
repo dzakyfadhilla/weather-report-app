@@ -1,8 +1,8 @@
-import js from '@eslint/js';
-import typescript from '@typescript-eslint/eslint-plugin';
-import typescriptParser from '@typescript-eslint/parser';
+const js = require('@eslint/js');
+const typescript = require('@typescript-eslint/eslint-plugin');
+const typescriptParser = require('@typescript-eslint/parser');
 
-export default [
+module.exports = [
   js.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx'],
@@ -38,7 +38,7 @@ export default [
       '@typescript-eslint/no-explicit-any': 'warn',
       'no-console': 'off',
       'prefer-const': 'warn',
-      'no-unused-vars': 'off', // Gunakan TypeScript version saja
+      'no-unused-vars': 'off', // Use TypeScript version only
       'no-unreachable': 'warn'
     },
   },

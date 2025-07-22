@@ -28,10 +28,6 @@ jobs:
         working-directory: ./weather-report
         run: npm ci
         
-      - name: Install ESLint dependencies
-        working-directory: ./weather-report
-        run: npm install --save-dev eslint @eslint/js @typescript-eslint/parser @typescript-eslint/eslint-plugin
-        
       - name: Run ESLint
         working-directory: ./weather-report
         run: npx eslint source/**/*.ts --max-warnings 50
@@ -45,7 +41,7 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [16, 18, 20]
+        node-version: [18, 20]
     
     steps:
       - name: Checkout code
