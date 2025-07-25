@@ -244,3 +244,6 @@ weather-data/
 uploads/
 public/uploads/
 docs/generated/
+
+# SonarCloud scanner work directory
+.scannerwork/
