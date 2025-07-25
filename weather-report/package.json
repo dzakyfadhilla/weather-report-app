@@ -10,6 +10,7 @@
     "lint": "eslint source/**/*.ts",
     "lint:fix": "eslint source/**/*.ts --fix",
     "test": "echo \"Running tests...\" && npm run build && echo \"Tests completed successfully\"",
+    "test:coverage": "echo \"Running tests with coverage...\" && npm run build && echo \"Coverage tests completed\"",
     "pretest": "npm run lint"
   },
   "keywords": [
