@@ -1,0 +1,110 @@
+name: CI Pipeline
+
+# Workflow akan dijalankan setiap kali ada push ke branch 'main'
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Job pertama: Lint
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: weather-report/package-lock.json
+          
+      - name: Install dependencies
+        working-directory: ./weather-report
+        run: npm ci
+        
+      - name: Run ESLint
+        working-directory: ./weather-report
+        run: npx eslint source/**/*.ts --max-warnings 50
+        continue-on-error: false
+
+  # Job kedua: Test (akan dijalankan setelah lint berhasil)
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: lint  # Job ini membutuhkan job 'lint' untuk berhasil terlebih dahulu
+    
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: weather-report/package-lock.json
+          
+      - name: Install dependencies
+        working-directory: ./weather-report
+        run: npm ci
+        
+      - name: Build TypeScript
+        working-directory: ./weather-report
+        run: npm run build
+        
+      - name: Run tests
+        working-directory: ./weather-report
+        run: npm test
+        
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-node-${{ matrix.node-version }}
+          path: weather-report/test-results/
+          retention-days: 7
+
+  # Job ketiga: SonarCloud Scan (akan dijalankan setelah test berhasil)
+  sonarcloud:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+    needs: [lint, test]  # Job ini membutuhkan job 'lint' dan 'test' untuk berhasil terlebih dahulu
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: weather-report/package-lock.json
+          
+      - name: Install dependencies
+        working-directory: ./weather-report
+        run: npm ci
+        
+      - name: Run build for SonarCloud
+        working-directory: ./weather-report
+        run: npm run build
+        
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: weather-report
